@@ -24,6 +24,7 @@
 - (SubmitButtonView *)submitBtnView {
     if (!_submitBtnView) {
         _submitBtnView = [[SubmitButtonView alloc] initWithFrame:CGRectMake((kScreenWidth - 200) / 2.0, (kScreenheight - 50) / 3.0, 200, 50)];
+        _submitBtnView.progress = 1.0;
     }
     return _submitBtnView;
 }

@@ -10,4 +10,6 @@
 
 @interface SubmitButtonView : UIView
 
+@property (nonatomic, assign) CGFloat progress;
+
 @end
