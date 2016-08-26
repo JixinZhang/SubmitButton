@@ -36,8 +36,8 @@
         _resetButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _resetButton.frame = CGRectMake((kScreenWidth - 200) / 2.0, kScreenHeight - 50, 200, 30);
         _resetButton.backgroundColor = mainColor;
-        _resetButton.layer.cornerRadius = 10.0f;
-        [_resetButton setTitle:@"reset" forState:UIControlStateNormal];
+        _resetButton.layer.cornerRadius = 15.0f;
+        [_resetButton setTitle:@"Reset Button" forState:UIControlStateNormal];
         [_resetButton addTarget:self action:@selector(resetSubmitButtonView) forControlEvents:UIControlEventTouchUpInside];
     }
     return _resetButton;

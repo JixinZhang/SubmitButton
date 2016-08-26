@@ -95,7 +95,7 @@
 }
 
 - (void)loadingProgressAnimationWithProgress:(CGFloat)progress {
-    CFTimeInterval interval = progress * 3 + 2.2;;
+    CFTimeInterval interval = progress * 3 + (22 / 72.0) * self.duration;;
     [_submitBtnLayer setTimeOffset:interval];
     _submitBtnLayer.speed = 0;
     if (progress == 1) {

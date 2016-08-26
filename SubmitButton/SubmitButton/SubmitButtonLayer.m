@@ -16,13 +16,39 @@
 
 /*
  *  动画改编的属性有：图形(包含了颜色)，文字，loading和对号。对这几个属性截取了时间节点。
- *  动画的整个过程为75。
- *  
- *
- *
+ *  动画的整个过程为72。
  */
-#define d
 
+
+/*
+ *  图形分为五个过程：0-5，5-20，20-22，22-52，52-72
+ */
+#define GRAPHIC_5_20 15.0
+#define GRAPHIC_52_72 20.0
+
+#define GRAPHIC_5 (5 / 72.0)
+#define GRAPHIC_20 (20 / 72.0)
+#define GRAPHIC_22 (22 / 72.0)
+#define GRAPHIC_52 (52 / 72.0)
+
+/*
+ *  文字分为四部分:0-3，3-5，5-17，17-72
+ */
+#define STRING_3 (3 / 72.0)
+#define STRING_5 (5 / 72.0)
+#define STRING_17 (17 / 72.0)
+
+/*
+ *  loading
+ */
+#define LOADING_22_52 30.0
+#define LOADING_22 (22 / 72.0)
+#define LOADING_52 (52 / 72.0)
+
+/*
+ *  对号
+ */
+#define CHECKMARK52 (52 / 72.0)
 
 @interface SubmitButtonLayer()
 
@@ -58,19 +84,16 @@
 
 - (void)drawInContext:(CGContextRef)ctx {
     
-    if (floorf(self.progress) == 22.0f) {
-    }
-    
     [self.path removeAllPoints];
     CGFloat halfWidth;
     
     //绘制跑道形->圆形->跑道形
-    if (self.progress <= 5) {
+    if (self.progress <= (GRAPHIC_5 * self.animationDuration)) {
         halfWidth = self.width / 2.0;
         self.fillColor = [UIColor colorWithRed:24/255.0 green:197/255.0 blue:138/255.0 alpha:1];
         self.circleBorderColor = mainColor;
-    }else if (self.progress <= 20){
-        CGFloat changeRate = (self.progress - 5) / 15.0;
+    }else if (self.progress <= (GRAPHIC_20 * self.animationDuration)){
+        CGFloat changeRate = (self.progress - 5) / GRAPHIC_5_20;
         halfWidth = self.width * (1 - changeRate) / 2.0;
         self.fillColor = [UIColor colorWithRed:(24 + (255 - 24) * changeRate) / 255.0
                                          green:(197 + (255 - 197) * changeRate) / 255.0
@@ -80,19 +103,19 @@
                                                  green:(197 + (180 - 197) * changeRate) / 255.0
                                                   blue:(138 + (180 - 138) * changeRate) / 255.0
                                                  alpha:1];
-    }else if (self.progress <= 22){
+    }else if (self.progress <= (GRAPHIC_22 * self.animationDuration)){
         halfWidth = 0;
         self.fillColor = [UIColor whiteColor];
         self.circleBorderColor = grayBorderColor;
         [[NSNotificationCenter defaultCenter] postNotificationName:@"SubmitButtonAnimationStop" object:nil];
         
-    }else if (self.progress < 52) {
+    }else if (self.progress < (GRAPHIC_52 * self.animationDuration)) {
         halfWidth = 0;
         self.fillColor = [UIColor whiteColor];
         self.circleBorderColor = grayBorderColor;
     }else {
-        CGFloat changeRate = (self.progress - 52) / 20.0;
-        halfWidth = self.width * (1 - (72 - self.progress) / 20.0) / 2.0;
+        CGFloat changeRate = (self.progress - (GRAPHIC_52 * self.animationDuration)) / GRAPHIC_52_72;
+        halfWidth = self.width * (1 - (self.animationDuration - self.progress) / GRAPHIC_52_72) / 2.0;
         self.fillColor = [UIColor colorWithRed:(255 - (255 - 24) * changeRate) / 255.0
                                          green:(255 - (255 - 197) * changeRate) / 255.0
                                           blue:(255 - (255 - 138) * changeRate) / 255.0
@@ -127,19 +150,19 @@
     
     //绘制文字
     NSString *text = @"Submit";
-    if (self.progress <= 3) {
+    if (self.progress <= (STRING_3 * self.animationDuration)) {
         NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:14 - self.progress],NSForegroundColorAttributeName:[UIColor whiteColor]};
         CGPoint textCenter = CGPointMake(self.center.x - [text sizeWithAttributes:attributes].width / 2.0, self.center.y - [text sizeWithAttributes:attributes].height / 2.0);
         UIGraphicsPushContext(ctx);
         [text drawAtPoint:textCenter withAttributes:attributes];
         UIGraphicsPopContext();
-    }else if (self.progress <=5) {
+    }else if (self.progress <= (STRING_5 * self.animationDuration)) {
         NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:10 + self.progress],NSForegroundColorAttributeName:[UIColor whiteColor]};
         CGPoint textCenter = CGPointMake(self.center.x - [text sizeWithAttributes:attributes].width / 2.0, self.center.y - [text sizeWithAttributes:attributes].height / 2.0);
         UIGraphicsPushContext(ctx);
         [text drawAtPoint:textCenter withAttributes:attributes];
         UIGraphicsPopContext();
-    }else if (self.progress < 17) {
+    }else if (self.progress < (STRING_17 * self.animationDuration)) {
         NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:14.0f],NSForegroundColorAttributeName:[UIColor whiteColor]};
         CGPoint textCenter = CGPointMake(self.center.x - [text sizeWithAttributes:attributes].width / 2.0, self.center.y - [text sizeWithAttributes:attributes].height / 2.0);
         UIGraphicsPushContext(ctx);
@@ -148,9 +171,9 @@
     }
     
     //绘制loadingAnimation
-    if (self.progress > 22 &&
-        self.progress < 52) {
-        NSString *progressStr = [NSString stringWithFormat:@"%.0f％",(self.progress - 22) / 30.0 * 100];
+    if (self.progress > (LOADING_22 * self.animationDuration) &&
+        self.progress < (LOADING_52 * self.animationDuration)) {
+        NSString *progressStr = [NSString stringWithFormat:@"%.0f％",(self.progress - (LOADING_22 * self.animationDuration)) / LOADING_22_52 * 100];
         NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:10.0f],NSForegroundColorAttributeName:mainColor};
         CGPoint textCenter = CGPointMake(self.center.x - [progressStr sizeWithAttributes:attributes].width / 2.0, self.center.y - [progressStr sizeWithAttributes:attributes].height / 2.0);
         UIGraphicsPushContext(ctx);
@@ -160,7 +183,7 @@
         
         UIBezierPath *circlePath = [UIBezierPath bezierPath];
         CGFloat originstart = -M_PI_2;
-        CGFloat currentOrigin = originstart + 2 * M_PI * (self.progress - 22) / 30.0;
+        CGFloat currentOrigin = originstart + 2 * M_PI * (self.progress - (LOADING_22 * self.animationDuration)) / LOADING_22_52;
         
         [circlePath addArcWithCenter:self.center radius:self.height / 2.0 startAngle:originstart endAngle:currentOrigin clockwise:YES];
         CGContextSaveGState(ctx);
@@ -171,11 +194,11 @@
         CGContextRestoreGState(ctx);
     }
     
-    if (self.progress > 52) {
+    if (self.progress > (LOADING_52 * self.animationDuration)) {
         //绘制对号√
         CGPoint checkMarkCenter = CGPointMake(self.center.x, self.center.y + 16);
         
-        CGFloat baseLength = (self.progress - 52) * 2;
+        CGFloat baseLength = (self.progress - (LOADING_52 * self.animationDuration)) * 2;
         CGPoint leftPoint = CGPointMake(checkMarkCenter.x - baseLength / 3.0 * cosf(M_PI_4), checkMarkCenter.y - baseLength / 3.0 * sinf(M_PI_4));
         CGPoint rightPoint = CGPointMake(checkMarkCenter.x + baseLength * cosf(M_PI_4), checkMarkCenter.y - baseLength * sinf(M_PI_4));
         
