@@ -90,7 +90,10 @@
     //绘制跑道形->圆形->跑道形
     if (self.progress <= (GRAPHIC_5 * self.animationDuration)) {
         halfWidth = self.width / 2.0;
-        self.fillColor = [UIColor colorWithRed:24/255.0 green:197/255.0 blue:138/255.0 alpha:1];
+        self.fillColor = [UIColor colorWithRed:24/255.0
+                                         green:197/255.0
+                                          blue:138/255.0
+                                         alpha:1];
         self.circleBorderColor = mainColor;
     }else if (self.progress <= (GRAPHIC_20 * self.animationDuration)){
         CGFloat changeRate = (self.progress - 5) / GRAPHIC_5_20;
@@ -108,7 +111,6 @@
         self.fillColor = [UIColor whiteColor];
         self.circleBorderColor = grayBorderColor;
         [[NSNotificationCenter defaultCenter] postNotificationName:@"SubmitButtonAnimationStop" object:nil];
-        
     }else if (self.progress < (GRAPHIC_52 * self.animationDuration)) {
         halfWidth = 0;
         self.fillColor = [UIColor whiteColor];
@@ -128,17 +130,20 @@
     
     [self.path moveToPoint:CGPointMake(self.center.x, self.center.y - self.height / 2.0)];
     [self.path addLineToPoint:CGPointMake(self.center.x + halfWidth, self.center.y - self.height / 2.0)];
-    
-    [self.path addArcWithCenter:CGPointMake(self.center.x + halfWidth, self.center.y) radius:self.height / 2.0 startAngle:-M_PI_2 endAngle:M_PI_2 clockwise:YES];
-    
+    [self.path addArcWithCenter:CGPointMake(self.center.x + halfWidth, self.center.y)
+                         radius:self.height / 2.0
+                     startAngle:-M_PI_2
+                       endAngle:M_PI_2
+                      clockwise:YES];
     [self.path addLineToPoint:CGPointMake(self.center.x - halfWidth, self.center.y + self.height / 2.0)];
-    
-    [self.path addArcWithCenter:CGPointMake(self.center.x - halfWidth, self.center.y) radius:self.height / 2.0 startAngle:M_PI_2 endAngle:M_PI_2 * 3 clockwise:YES];
-    
+    [self.path addArcWithCenter:CGPointMake(self.center.x - halfWidth, self.center.y)
+                         radius:self.height / 2.0
+                     startAngle:M_PI_2
+                       endAngle:M_PI_2 * 3
+                      clockwise:YES];
     [self.path addLineToPoint:CGPointMake(self.center.x, self.center.y - self.height / 2.0)];
     [self.path moveToPoint:CGPointMake(self.center.x, self.center.y - self.height / 2.0)];
     [self.path closePath];
-    
     CGContextSaveGState(ctx);
     CGContextSetFillColorWithColor(ctx, self.fillColor.CGColor);
     CGContextSetLineWidth(ctx, 3.0f);
@@ -146,7 +151,6 @@
     CGContextAddPath(ctx, self.path.CGPath);
     CGContextDrawPath(ctx, kCGPathFillStroke);
     CGContextRestoreGState(ctx);
-    
     
     //绘制文字
     NSString *text = @"Submit";
@@ -173,6 +177,7 @@
     //绘制loadingAnimation
     if (self.progress > (LOADING_22 * self.animationDuration) &&
         self.progress < (LOADING_52 * self.animationDuration)) {
+        //绘制百分比String
         NSString *progressStr = [NSString stringWithFormat:@"%.0f％",(self.progress - (LOADING_22 * self.animationDuration)) / LOADING_22_52 * 100];
         NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:10.0f],NSForegroundColorAttributeName:mainColor};
         CGPoint textCenter = CGPointMake(self.center.x - [progressStr sizeWithAttributes:attributes].width / 2.0, self.center.y - [progressStr sizeWithAttributes:attributes].height / 2.0);
