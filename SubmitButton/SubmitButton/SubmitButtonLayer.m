@@ -14,6 +14,16 @@
 #define mainColor [UIColor colorWithRed:24/255.0 green:197/255.0 blue:138/255.0 alpha:1]
 #define grayBorderColor [UIColor colorWithRed:180/255.0 green:180/255.0 blue:180/255.0 alpha:1]
 
+/*
+ *  动画改编的属性有：图形(包含了颜色)，文字，loading和对号。对这几个属性截取了时间节点。
+ *  动画的整个过程为75。
+ *  
+ *
+ *
+ */
+#define d
+
+
 @interface SubmitButtonLayer()
 
 @property (nonatomic, strong) UIColor *fillColor;
@@ -24,6 +34,7 @@
 
 @implementation SubmitButtonLayer
 
+@dynamic animationDuration;
 @dynamic progress;
 @dynamic center;
 @dynamic width;
@@ -75,9 +86,13 @@
         self.circleBorderColor = grayBorderColor;
         [[NSNotificationCenter defaultCenter] postNotificationName:@"SubmitButtonAnimationStop" object:nil];
         
+    }else if (self.progress < 52) {
+        halfWidth = 0;
+        self.fillColor = [UIColor whiteColor];
+        self.circleBorderColor = grayBorderColor;
     }else {
-        CGFloat changeRate = (self.progress - 22) / 20.0;
-        halfWidth = self.width * (1 - (42 - self.progress) / 20.0) / 2.0;
+        CGFloat changeRate = (self.progress - 52) / 20.0;
+        halfWidth = self.width * (1 - (72 - self.progress) / 20.0) / 2.0;
         self.fillColor = [UIColor colorWithRed:(255 - (255 - 24) * changeRate) / 255.0
                                          green:(255 - (255 - 197) * changeRate) / 255.0
                                           blue:(255 - (255 - 138) * changeRate) / 255.0
@@ -132,11 +147,35 @@
         UIGraphicsPopContext();
     }
     
-    if (self.progress > 22) {
+    //绘制loadingAnimation
+    if (self.progress > 22 &&
+        self.progress < 52) {
+        NSString *progressStr = [NSString stringWithFormat:@"%.0f％",(self.progress - 22) / 30.0 * 100];
+        NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:10.0f],NSForegroundColorAttributeName:mainColor};
+        CGPoint textCenter = CGPointMake(self.center.x - [progressStr sizeWithAttributes:attributes].width / 2.0, self.center.y - [progressStr sizeWithAttributes:attributes].height / 2.0);
+        UIGraphicsPushContext(ctx);
+        [progressStr drawAtPoint:textCenter withAttributes:attributes];
+        UIGraphicsPopContext();
+
+        
+        UIBezierPath *circlePath = [UIBezierPath bezierPath];
+        CGFloat originstart = -M_PI_2;
+        CGFloat currentOrigin = originstart + 2 * M_PI * (self.progress - 22) / 30.0;
+        
+        [circlePath addArcWithCenter:self.center radius:self.height / 2.0 startAngle:originstart endAngle:currentOrigin clockwise:YES];
+        CGContextSaveGState(ctx);
+        CGContextSetLineWidth(ctx, 3.0f);
+        CGContextSetStrokeColorWithColor(ctx, mainColor.CGColor);
+        CGContextAddPath(ctx, circlePath.CGPath);
+        CGContextDrawPath(ctx, kCGPathStroke);
+        CGContextRestoreGState(ctx);
+    }
+    
+    if (self.progress > 52) {
         //绘制对号√
         CGPoint checkMarkCenter = CGPointMake(self.center.x, self.center.y + 16);
         
-        CGFloat baseLength = (self.progress - 22) * 2;
+        CGFloat baseLength = (self.progress - 52) * 2;
         CGPoint leftPoint = CGPointMake(checkMarkCenter.x - baseLength / 3.0 * cosf(M_PI_4), checkMarkCenter.y - baseLength / 3.0 * sinf(M_PI_4));
         CGPoint rightPoint = CGPointMake(checkMarkCenter.x + baseLength * cosf(M_PI_4), checkMarkCenter.y - baseLength * sinf(M_PI_4));
         
@@ -166,36 +205,3 @@
 
 @end
 
-@implementation SubmitButtonLoadingLayer
-
-@dynamic loadingProgress;
-@dynamic center;
-@dynamic radius;
-
-+ (BOOL)needsDisplayForKey:(NSString *)key {
-    if ([key isEqualToString:@"loadingProgress"]) {
-        return YES;
-    }
-    return [super needsDisplayForKey:key];
-}
-
-- (void)drawInContext:(CGContextRef)ctx {
-    UIBezierPath *circlePath = [UIBezierPath bezierPath];
-    CGFloat originstart = -M_PI_2;
-    CGFloat currentOrigin = originstart + 2 * M_PI *self.loadingProgress;
-
-    [circlePath addArcWithCenter:self.center radius:self.radius startAngle:originstart endAngle:currentOrigin clockwise:YES];
-    CGContextSaveGState(ctx);
-    CGContextSetLineWidth(ctx, 3.0f);
-    CGContextSetStrokeColorWithColor(ctx, mainColor.CGColor);
-    CGContextAddPath(ctx, circlePath.CGPath);
-    CGContextDrawPath(ctx, kCGPathStroke);
-    CGContextRestoreGState(ctx);
-    
-    if (self.loadingProgress == 1.0) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"SubmitButtonLoadingCompleted" object:nil];
-    }
-
-}
-
-@end

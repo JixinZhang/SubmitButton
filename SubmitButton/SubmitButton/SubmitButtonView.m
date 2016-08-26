@@ -15,7 +15,6 @@
 @interface SubmitButtonView()
 
 @property (nonatomic, strong) SubmitButtonLayer *submitBtnLayer;
-@property (nonatomic, strong) SubmitButtonLoadingLayer *submitBtnLoadingLayer;
 
 @end
 
@@ -25,20 +24,19 @@
     if (self = [super initWithFrame:frame]) {
         self.frame = frame;
         self.backgroundColor = [UIColor clearColor];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(animationFirstPartCompleted) name:@"SubmitButtonAnimationStop" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadingProgressAnimationCompleted) name:@"SubmitButtonLoadingCompleted" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(animationPause) name:@"SubmitButtonAnimationStop" object:nil];
+        self.duration = 7.2f;
     }
     return self;
 }
 
 - (SubmitButtonLayer *)submitBtnLayer {
-//    __weak typeof (self)weakSelf = self;
     if (!_submitBtnLayer) {
         _submitBtnLayer = [SubmitButtonLayer layer];
         _submitBtnLayer.contentsScale = [UIScreen mainScreen].scale;
         _submitBtnLayer.bounds = CGRectMake(0, 0, viewWidth, viewHeight);
         _submitBtnLayer.position = CGPointMake(viewWidth / 2.0, viewHeight / 2.0);
-        _submitBtnLayer.progress = 42;
+        _submitBtnLayer.animationDuration = self.duration * 10;
         _submitBtnLayer.center = CGPointMake(viewWidth / 2.0, viewHeight / 2.0);
         _submitBtnLayer.width = viewWidth - viewHeight - 8;
         _submitBtnLayer.height = viewHeight - 8;
@@ -47,44 +45,28 @@
     return  _submitBtnLayer;
 }
 
-- (SubmitButtonLoadingLayer *)submitBtnLoadingLayer {
-    if (!_submitBtnLoadingLayer) {
-        _submitBtnLoadingLayer = [SubmitButtonLoadingLayer layer];
-        _submitBtnLoadingLayer.contentsScale = [UIScreen mainScreen].scale;
-        _submitBtnLoadingLayer.bounds = CGRectMake(0, 0, viewWidth, viewHeight);
-        _submitBtnLoadingLayer.position = CGPointMake(viewWidth / 2.0, viewHeight / 2.0);
-        _submitBtnLoadingLayer.center = CGPointMake(viewWidth / 2.0, viewHeight / 2.0);
-        _submitBtnLoadingLayer.radius = (viewHeight - 8) / 2.0;
-        _submitBtnLoadingLayer.loadingProgress = 1;
-    }
-    return _submitBtnLoadingLayer;
-}
-
 - (void)drawRect:(CGRect)rect {
     [self setupsubmitBtnLayer];
 }
 
 - (void)setupsubmitBtnLayer {
-    [self.layer addSublayer:self.submitBtnLayer];
-    
     CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"progress"];
-    animation.duration = 4.2f;
+    animation.duration = self.duration;
     animation.fromValue = @0.0;
-    animation.toValue = @42.0;
+    animation.toValue = [NSNumber numberWithFloat:self.duration * 10];
     animation.repeatCount = 1;
-//    animation.delegate = self;
     [self.submitBtnLayer addAnimation:animation forKey:@"SubmitButtonAnimaiton"];
     
+    [self.layer addSublayer:self.submitBtnLayer];
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     //判断是否已经常见过动画，如果已经创建则不再创建动画
     CAAnimation *animation= [_submitBtnLayer animationForKey:@"SubmitButtonAnimaiton"];
     if(animation){
-        if (_submitBtnLayer.speed==0) {
+        if (_submitBtnLayer.speed == 0 &&
+            _submitBtnLayer.timeOffset == 0) {
             [self animationResume];
-        }else{
-            [self animationPause];
         }
     }
 }
@@ -107,23 +89,20 @@
     [_submitBtnLayer setTimeOffset:interval];
     //速度设置为0，暂停动画
     _submitBtnLayer.speed=0;
+    if (self.block) {
+        self.block(SubmitButtonStatusLoading);
+    }
 }
 
-- (void)animationFirstPartCompleted {
-    [self animationPause];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SubmitButtonAnimationStop" object:nil];
-    [self.layer addSublayer:self.submitBtnLoadingLayer];
-    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"loadingProgress"];
-    animation.duration = 3.0f;
-    animation.fromValue = @0.0;
-    animation.toValue = @1.0;
-    animation.repeatCount = 1;
-    [self.submitBtnLoadingLayer addAnimation:animation forKey:@"SubmitButtonLoadingAnimaiton"];
-}
-
-- (void)loadingProgressAnimationCompleted {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [self animationResume];
-    [self.submitBtnLoadingLayer removeFromSuperlayer];
+- (void)loadingProgressAnimationWithProgress:(CGFloat)progress {
+    CFTimeInterval interval = progress * 3 + 2.2;;
+    [_submitBtnLayer setTimeOffset:interval];
+    _submitBtnLayer.speed = 0;
+    if (progress == 1) {
+        [self animationResume];
+        if (self.block) {
+            self.block(SubmitButtonStatusEnd);
+        }
+    }
 }
 @end
