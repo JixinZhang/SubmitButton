@@ -25,7 +25,7 @@
         self.frame = frame;
         self.backgroundColor = [UIColor clearColor];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(animationPause) name:@"SubmitButtonAnimationStop" object:nil];
-        self.duration = 7.2f;
+        self.duration = 8.2f;
     }
     return self;
 }
@@ -95,7 +95,7 @@
 }
 
 - (void)loadingProgressAnimationWithProgress:(CGFloat)progress {
-    CFTimeInterval interval = progress * 3 + (22 / 72.0) * self.duration;;
+    CFTimeInterval interval = progress * 3 + (32 / 82.0) * self.duration;;
     [_submitBtnLayer setTimeOffset:interval];
     _submitBtnLayer.speed = 0;
     if (progress == 1) {

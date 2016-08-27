@@ -16,39 +16,43 @@
 
 /*
  *  动画改编的属性有：图形(包含了颜色)，文字，loading和对号。对这几个属性截取了时间节点。
- *  动画的整个过程为72。
+ *  动画的整个过程为82。
  */
 
 
 /*
- *  图形分为五个过程：0-5，5-20，20-22，22-52，52-72
+ *  图形分为五个过程：0-10， 0-5，5-20，20-22，22-52，52-82
  */
-#define GRAPHIC_5_20 15.0
-#define GRAPHIC_52_72 20.0
-
-#define GRAPHIC_5 (5 / 72.0)
-#define GRAPHIC_20 (20 / 72.0)
-#define GRAPHIC_22 (22 / 72.0)
-#define GRAPHIC_52 (52 / 72.0)
+#define GRAPHIC_15_30 15.0
+#define GRAPHIC_62_72 10.0
+#define GRAPHIC_10 (10 / 82.0)
+#define GRAPHIC_15 (15 / 82.0)
+#define GRAPHIC_30 (30 / 82.0)
+#define GRAPHIC_32 (32 / 82.0)
+#define GRAPHIC_62 (62 / 82.0)
+#define GRAPHIC_72 (72 / 82.0)
 
 /*
- *  文字分为四部分:0-3，3-5，5-17，17-72
+ *  文字分为四部分:0-3，3-5，5-17，17-82
  */
-#define STRING_3 (3 / 72.0)
-#define STRING_5 (5 / 72.0)
-#define STRING_17 (17 / 72.0)
+#define STRING_10 (10 / 82.0)
+#define STRING_13 (13 / 82.0)
+#define STRING_15 (15 / 82.0)
+#define STRING_27 (27 / 82.0)
+#define STRING_77 (77 / 82.0)
 
 /*
  *  loading
  */
-#define LOADING_22_52 30.0
-#define LOADING_22 (22 / 72.0)
-#define LOADING_52 (52 / 72.0)
+#define LOADING_32_62 30.0
+#define LOADING_32 (32 / 82.0)
+#define LOADING_62 (62 / 82.0)
+#define LOADING_72 (72 / 82.0)
 
 /*
  *  对号
  */
-#define CHECKMARK52 (52 / 72.0)
+#define CHECKMARK_62 (62 / 82.0)
 
 @interface SubmitButtonLayer()
 
@@ -85,18 +89,23 @@
 - (void)drawInContext:(CGContextRef)ctx {
     
     [self.path removeAllPoints];
-    CGFloat halfWidth;
-    
+    CGFloat halfWidth = self.width / 2.0;
+    self.fillColor = [UIColor whiteColor];
+    self.circleBorderColor = mainColor;
     //绘制跑道形->圆形->跑道形
-    if (self.progress <= (GRAPHIC_5 * self.animationDuration)) {
-        halfWidth = self.width / 2.0;
+    if (self.progress <= (GRAPHIC_10 * self.animationDuration)) {
+        CGFloat changeRate = (self.progress / (GRAPHIC_10 * self.animationDuration));
+        self.fillColor = [UIColor colorWithRed:(255 - (255 - 24) * changeRate) / 255.0
+                                         green:(255 - (255 - 197) * changeRate) / 255.0
+                                          blue:(255 - (255 - 138) * changeRate) / 255.0
+                                         alpha:1];
+    }else if (self.progress <= (GRAPHIC_15 * self.animationDuration)) {
         self.fillColor = [UIColor colorWithRed:24/255.0
                                          green:197/255.0
                                           blue:138/255.0
                                          alpha:1];
-        self.circleBorderColor = mainColor;
-    }else if (self.progress <= (GRAPHIC_20 * self.animationDuration)){
-        CGFloat changeRate = (self.progress - 5) / GRAPHIC_5_20;
+    }else if (self.progress <= (GRAPHIC_30 * self.animationDuration)){
+        CGFloat changeRate = (self.progress - GRAPHIC_15_30) / GRAPHIC_15_30;
         halfWidth = self.width * (1 - changeRate) / 2.0;
         self.fillColor = [UIColor colorWithRed:(24 + (255 - 24) * changeRate) / 255.0
                                          green:(197 + (255 - 197) * changeRate) / 255.0
@@ -106,18 +115,19 @@
                                                  green:(197 + (180 - 197) * changeRate) / 255.0
                                                   blue:(138 + (180 - 138) * changeRate) / 255.0
                                                  alpha:1];
-    }else if (self.progress <= (GRAPHIC_22 * self.animationDuration)){
+    }else if (self.progress <= (GRAPHIC_32 * self.animationDuration)){
         halfWidth = 0;
         self.fillColor = [UIColor whiteColor];
         self.circleBorderColor = grayBorderColor;
         [[NSNotificationCenter defaultCenter] postNotificationName:@"SubmitButtonAnimationStop" object:nil];
-    }else if (self.progress < (GRAPHIC_52 * self.animationDuration)) {
+    }else if (self.progress <= (GRAPHIC_62 * self.animationDuration)) {
         halfWidth = 0;
         self.fillColor = [UIColor whiteColor];
         self.circleBorderColor = grayBorderColor;
-    }else {
-        CGFloat changeRate = (self.progress - (GRAPHIC_52 * self.animationDuration)) / GRAPHIC_52_72;
-        halfWidth = self.width * (1 - (self.animationDuration - self.progress) / GRAPHIC_52_72) / 2.0;
+    }else if (self.progress > (GRAPHIC_62 * self.animationDuration) &&
+              self.progress < (GRAPHIC_72 * self.animationDuration)){
+        CGFloat changeRate = (self.progress - (GRAPHIC_62 * self.animationDuration)) / GRAPHIC_62_72;
+        halfWidth = self.width * (1 - (self.animationDuration - 10 - self.progress) / GRAPHIC_62_72) / 2.0;
         self.fillColor = [UIColor colorWithRed:(255 - (255 - 24) * changeRate) / 255.0
                                          green:(255 - (255 - 197) * changeRate) / 255.0
                                           blue:(255 - (255 - 138) * changeRate) / 255.0
@@ -126,6 +136,12 @@
                                                  green:(180 - (180 - 197) * changeRate) / 255.0
                                                   blue:(180 - (180 - 138) * changeRate) / 255.0
                                                  alpha:1];
+    }else {
+        CGFloat changeRate = (self.progress - (GRAPHIC_72 * self.animationDuration)) / GRAPHIC_62_72;
+        self.fillColor = [UIColor colorWithRed:(24 + (255 - 24) * changeRate) / 255.0
+                                         green:(197 + (255 - 197) * changeRate) / 255.0
+                                          blue:(138 + (255 - 138) * changeRate) / 255.0
+                                         alpha:1];
     }
     
     [self.path moveToPoint:CGPointMake(self.center.x, self.center.y - self.height / 2.0)];
@@ -154,20 +170,44 @@
     
     //绘制文字
     NSString *text = @"Submit";
-    if (self.progress <= (STRING_3 * self.animationDuration)) {
-        NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:14 - self.progress],NSForegroundColorAttributeName:[UIColor whiteColor]};
+    if (self.progress <= (STRING_10 * self.animationDuration)) {
+        CGFloat changeRate = self.progress / (STRING_10 * self.animationDuration);
+        UIColor *stringColor = [UIColor colorWithRed:(24 + (255 - 24) * changeRate) / 255.0
+                                              green:(197 + (255 - 197) * changeRate) / 255.0
+                                               blue:(138 + (255 - 138) * changeRate) / 255.0
+                                              alpha:1];
+        NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:14],
+                                     NSForegroundColorAttributeName:stringColor};
         CGPoint textCenter = CGPointMake(self.center.x - [text sizeWithAttributes:attributes].width / 2.0, self.center.y - [text sizeWithAttributes:attributes].height / 2.0);
         UIGraphicsPushContext(ctx);
         [text drawAtPoint:textCenter withAttributes:attributes];
         UIGraphicsPopContext();
-    }else if (self.progress <= (STRING_5 * self.animationDuration)) {
-        NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:10 + self.progress],NSForegroundColorAttributeName:[UIColor whiteColor]};
+    }else if (self.progress <= (STRING_13 * self.animationDuration)) {
+        NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:14 - self.progress + 10],NSForegroundColorAttributeName:[UIColor whiteColor]};
         CGPoint textCenter = CGPointMake(self.center.x - [text sizeWithAttributes:attributes].width / 2.0, self.center.y - [text sizeWithAttributes:attributes].height / 2.0);
         UIGraphicsPushContext(ctx);
         [text drawAtPoint:textCenter withAttributes:attributes];
         UIGraphicsPopContext();
-    }else if (self.progress < (STRING_17 * self.animationDuration)) {
+    }else if (self.progress <= (STRING_15 * self.animationDuration)) {
+        NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:10 + self.progress - 10],NSForegroundColorAttributeName:[UIColor whiteColor]};
+        CGPoint textCenter = CGPointMake(self.center.x - [text sizeWithAttributes:attributes].width / 2.0, self.center.y - [text sizeWithAttributes:attributes].height / 2.0);
+        UIGraphicsPushContext(ctx);
+        [text drawAtPoint:textCenter withAttributes:attributes];
+        UIGraphicsPopContext();
+    }else if (self.progress < (STRING_27 * self.animationDuration)) {
         NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:14.0f],NSForegroundColorAttributeName:[UIColor whiteColor]};
+        CGPoint textCenter = CGPointMake(self.center.x - [text sizeWithAttributes:attributes].width / 2.0, self.center.y - [text sizeWithAttributes:attributes].height / 2.0);
+        UIGraphicsPushContext(ctx);
+        [text drawAtPoint:textCenter withAttributes:attributes];
+        UIGraphicsPopContext();
+    }else if (self.progress > (STRING_77 * self.animationDuration)) {
+        CGFloat changeRate = (self.progress - (STRING_77 * self.animationDuration)) / 5.0;
+        UIColor *stringColor = [UIColor colorWithRed:(236 - (236 - 24) * changeRate) / 255.0
+                                               green:(251 - (251 - 197) * changeRate) / 255.0
+                                                blue:(246 - (246 - 138) * changeRate) / 255.0
+                                               alpha:1];
+        NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:14.0f],
+                                     NSForegroundColorAttributeName:stringColor};
         CGPoint textCenter = CGPointMake(self.center.x - [text sizeWithAttributes:attributes].width / 2.0, self.center.y - [text sizeWithAttributes:attributes].height / 2.0);
         UIGraphicsPushContext(ctx);
         [text drawAtPoint:textCenter withAttributes:attributes];
@@ -175,10 +215,10 @@
     }
     
     //绘制loadingAnimation
-    if (self.progress > (LOADING_22 * self.animationDuration) &&
-        self.progress < (LOADING_52 * self.animationDuration)) {
+    if (self.progress > (LOADING_32 * self.animationDuration) &&
+        self.progress < (LOADING_62 * self.animationDuration)) {
         //绘制百分比String
-        NSString *progressStr = [NSString stringWithFormat:@"%.0f％",(self.progress - (LOADING_22 * self.animationDuration)) / LOADING_22_52 * 100];
+        NSString *progressStr = [NSString stringWithFormat:@"%.0f％",(self.progress - (LOADING_32 * self.animationDuration)) / LOADING_32_62 * 100];
         NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:10.0f],NSForegroundColorAttributeName:mainColor};
         CGPoint textCenter = CGPointMake(self.center.x - [progressStr sizeWithAttributes:attributes].width / 2.0, self.center.y - [progressStr sizeWithAttributes:attributes].height / 2.0);
         UIGraphicsPushContext(ctx);
@@ -188,7 +228,7 @@
         
         UIBezierPath *circlePath = [UIBezierPath bezierPath];
         CGFloat originstart = -M_PI_2;
-        CGFloat currentOrigin = originstart + 2 * M_PI * (self.progress - (LOADING_22 * self.animationDuration)) / LOADING_22_52;
+        CGFloat currentOrigin = originstart + 2 * M_PI * (self.progress - (LOADING_32 * self.animationDuration)) / LOADING_32_62;
         
         [circlePath addArcWithCenter:self.center radius:self.height / 2.0 startAngle:originstart endAngle:currentOrigin clockwise:YES];
         CGContextSaveGState(ctx);
@@ -199,11 +239,12 @@
         CGContextRestoreGState(ctx);
     }
     
-    if (self.progress > (LOADING_52 * self.animationDuration)) {
+    if (self.progress > (LOADING_62 * self.animationDuration) &&
+        self.progress < (LOADING_72 * self.animationDuration)) {
         //绘制对号√
         CGPoint checkMarkCenter = CGPointMake(self.center.x, self.center.y + 16);
         
-        CGFloat baseLength = (self.progress - (LOADING_52 * self.animationDuration)) * 2;
+        CGFloat baseLength = (self.progress - (LOADING_62 * self.animationDuration)) * 3;
         CGPoint leftPoint = CGPointMake(checkMarkCenter.x - baseLength / 3.0 * cosf(M_PI_4), checkMarkCenter.y - baseLength / 3.0 * sinf(M_PI_4));
         CGPoint rightPoint = CGPointMake(checkMarkCenter.x + baseLength * cosf(M_PI_4), checkMarkCenter.y - baseLength * sinf(M_PI_4));
         
