@@ -94,6 +94,9 @@
     UISlider *slider = sender;
     self.speedLabel.text = [NSString stringWithFormat:@"进度：%.1f",slider.value];
     [self.submitBtnView loadingProgressAnimationWithProgress:slider.value];
+    if (slider.value == 1) {
+        [self showAlertForSetFinalResult];
+    }
 }
 
 - (void)resetSubmitButtonView {
@@ -104,6 +107,22 @@
 
     [self.submitBtnView removeFromSuperview];
     [self setupSubmitButtonView];
+}
+
+- (void)showAlertForSetFinalResult {
+    __weak typeof (self)wSelf = self;
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"请选择加载结果" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *failedAction = [UIAlertAction actionWithTitle:@"失败" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        [wSelf.submitBtnView setFinalResultWith:NO];
+    }];
+    UIAlertAction *succeedAction = [UIAlertAction actionWithTitle:@"成功" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [wSelf.submitBtnView setFinalResultWith:YES];
+    }];
+    
+    [alertController addAction:failedAction];
+    [alertController addAction:succeedAction];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 @end

@@ -64,6 +64,7 @@
 
 @implementation SubmitButtonLayer
 
+@dynamic succeeded;
 @dynamic animationDuration;
 @dynamic progress;
 @dynamic center;
@@ -241,34 +242,65 @@
     
     if (self.progress > (LOADING_62 * self.animationDuration) &&
         self.progress < (LOADING_72 * self.animationDuration)) {
-        //绘制对号√
-        CGPoint checkMarkCenter = CGPointMake(self.center.x, self.center.y + 16);
-        
-        CGFloat baseLength = (self.progress - (LOADING_62 * self.animationDuration)) * 3;
-        CGPoint leftPoint = CGPointMake(checkMarkCenter.x - baseLength / 3.0 * cosf(M_PI_4), checkMarkCenter.y - baseLength / 3.0 * sinf(M_PI_4));
-        CGPoint rightPoint = CGPointMake(checkMarkCenter.x + baseLength * cosf(M_PI_4), checkMarkCenter.y - baseLength * sinf(M_PI_4));
-        
-        CGContextSaveGState(ctx);
-        CGContextSetFillColorWithColor(ctx, [UIColor whiteColor].CGColor);
-        CGContextAddArc(ctx, leftPoint.x, leftPoint.y, 2.0, 0, 2 * M_PI, 1);
-        CGContextDrawPath(ctx, kCGPathFill);
-        CGContextAddArc(ctx, checkMarkCenter.x, checkMarkCenter.y, 2.0, 0, 2 * M_PI, 1);
-        CGContextDrawPath(ctx, kCGPathFill);
-        CGContextAddArc(ctx, rightPoint.x, rightPoint.y, 2.0, 0, 2 * M_PI, 1);
-        CGContextDrawPath(ctx, kCGPathFill);
-        CGContextRestoreGState(ctx);
-        
-        CGContextSaveGState(ctx);
-        CGContextSetLineWidth(ctx, 4.0f);
-        CGContextSetStrokeColorWithColor(ctx, [UIColor whiteColor].CGColor);
-        CGContextMoveToPoint(ctx, leftPoint.x, leftPoint.y);
-        CGContextAddLineToPoint(ctx, checkMarkCenter.x, checkMarkCenter.y);
-        CGContextMoveToPoint(ctx, checkMarkCenter.x, checkMarkCenter.y);
-        CGContextAddLineToPoint(ctx, rightPoint.x, rightPoint.y);
-        CGContextMoveToPoint(ctx, rightPoint.x, rightPoint.y);
-        CGContextClosePath(ctx);
-        CGContextDrawPath(ctx, kCGPathStroke);
-        CGContextRestoreGState(ctx);
+        if (self.succeeded) {
+            //绘制对号√
+            CGPoint checkMarkCenter = CGPointMake(self.center.x, self.center.y + 16);
+            
+            CGFloat baseLength = (self.progress - (LOADING_62 * self.animationDuration)) * 3;
+            CGPoint leftPoint = CGPointMake(checkMarkCenter.x - baseLength / 3.0 * cosf(M_PI_4), checkMarkCenter.y - baseLength / 3.0 * sinf(M_PI_4));
+            CGPoint rightPoint = CGPointMake(checkMarkCenter.x + baseLength * cosf(M_PI_4), checkMarkCenter.y - baseLength * sinf(M_PI_4));
+            
+            CGContextSaveGState(ctx);
+            CGContextSetFillColorWithColor(ctx, [UIColor whiteColor].CGColor);
+            CGContextAddArc(ctx, leftPoint.x, leftPoint.y, 2.0, 0, 2 * M_PI, 1);
+            CGContextDrawPath(ctx, kCGPathFill);
+            CGContextAddArc(ctx, checkMarkCenter.x, checkMarkCenter.y, 2.0, 0, 2 * M_PI, 1);
+            CGContextDrawPath(ctx, kCGPathFill);
+            CGContextAddArc(ctx, rightPoint.x, rightPoint.y, 2.0, 0, 2 * M_PI, 1);
+            CGContextDrawPath(ctx, kCGPathFill);
+            CGContextRestoreGState(ctx);
+            
+            CGContextSaveGState(ctx);
+            CGContextSetLineWidth(ctx, 4.0f);
+            CGContextSetStrokeColorWithColor(ctx, [UIColor whiteColor].CGColor);
+            CGContextMoveToPoint(ctx, leftPoint.x, leftPoint.y);
+            CGContextAddLineToPoint(ctx, checkMarkCenter.x, checkMarkCenter.y);
+            CGContextMoveToPoint(ctx, checkMarkCenter.x, checkMarkCenter.y);
+            CGContextAddLineToPoint(ctx, rightPoint.x, rightPoint.y);
+            CGContextMoveToPoint(ctx, rightPoint.x, rightPoint.y);
+            CGContextDrawPath(ctx, kCGPathStroke);
+            CGContextRestoreGState(ctx);
+        }else {
+            //绘制❌
+            CGPoint negitiveCenter = CGPointMake(self.center.x, self.center.y);
+            CGFloat baseLength = (self.progress - (LOADING_62 * self.animationDuration)) * 2;
+            
+            CGPoint leftTopPoint = CGPointMake(negitiveCenter.x - baseLength * cosf(M_PI_4), negitiveCenter.y - baseLength * sinf(M_PI_4));
+            CGPoint rightTopPoint = CGPointMake(negitiveCenter.x + baseLength * cosf(M_PI_4), negitiveCenter.y - baseLength * sinf(M_PI_4));
+            CGPoint leftButtomPoint = CGPointMake(negitiveCenter.x - baseLength * cosf(M_PI_4), negitiveCenter.y + baseLength * sinf(M_PI_4));
+            CGPoint rightBottomPoint = CGPointMake(negitiveCenter.x + baseLength * cosf(M_PI_4), negitiveCenter.y + baseLength * sinf(M_PI_4));
+            CGPoint point[4] = {leftTopPoint,rightTopPoint,leftButtomPoint,rightBottomPoint};
+            
+            CGContextSaveGState(ctx);
+            CGContextSetFillColorWithColor(ctx, [UIColor redColor].CGColor);
+            for (NSInteger i = 0; i < 4; i++) {
+                CGContextAddArc(ctx, point[i].x, point[i].y, 2.0, 0, 2 * M_PI, 1);
+                CGContextDrawPath(ctx, kCGPathFill);
+            }
+            CGContextRestoreGState(ctx);
+            
+            CGContextSaveGState(ctx);
+            CGContextSetLineWidth(ctx, 4.0f);
+            CGContextSetStrokeColorWithColor(ctx, [UIColor redColor].CGColor);
+            CGContextMoveToPoint(ctx, leftTopPoint.x, leftTopPoint.y);
+            CGContextAddLineToPoint(ctx, rightBottomPoint.x, rightBottomPoint.y);
+            CGContextMoveToPoint(ctx, leftButtomPoint.x, leftButtomPoint.y);
+            CGContextAddLineToPoint(ctx, rightTopPoint.x, rightTopPoint.y);
+            CGContextMoveToPoint(ctx, rightTopPoint.x, rightTopPoint.y);
+            CGContextDrawPath(ctx, kCGPathStroke);
+            CGContextRestoreGState(ctx);
+            
+        }
     }
 }
 

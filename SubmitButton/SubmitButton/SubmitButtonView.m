@@ -15,6 +15,10 @@
 @interface SubmitButtonView()
 
 @property (nonatomic, strong) SubmitButtonLayer *submitBtnLayer;
+/**
+ *  动画时长
+ */
+@property (nonatomic, assign) CGFloat duration;
 
 @end
 
@@ -41,6 +45,7 @@
         _submitBtnLayer.width = viewWidth - viewHeight - 8;
         _submitBtnLayer.height = viewHeight - 8;
         _submitBtnLayer.speed = 0;
+        _submitBtnLayer.succeeded = YES;
     }
     return  _submitBtnLayer;
 }
@@ -98,11 +103,14 @@
     CFTimeInterval interval = progress * 3 + (32 / 82.0) * self.duration;;
     [_submitBtnLayer setTimeOffset:interval];
     _submitBtnLayer.speed = 0;
-    if (progress == 1) {
-        [self animationResume];
-        if (self.block) {
-            self.block(SubmitButtonStatusEnd);
-        }
+}
+
+- (void)setFinalResultWith:(BOOL)result {
+    _submitBtnLayer.succeeded = result;
+    [self animationResume];
+    if (self.block) {
+        self.block(SubmitButtonStatusEnd);
     }
 }
+
 @end

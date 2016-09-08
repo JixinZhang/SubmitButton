@@ -19,11 +19,6 @@ typedef void (^SubmitButtonStatusBlock)(SubmitButtonStatus submitBtnStatus);
 @interface SubmitButtonView : UIView
 
 /**
- *  动画时长
- */
-@property (nonatomic, assign) CGFloat duration;
-
-/**
  *  SubmitButton被点击，将点击事件通过Block传递
  */
 @property (nonatomic, copy) SubmitButtonStatusBlock block;
@@ -34,5 +29,12 @@ typedef void (^SubmitButtonStatusBlock)(SubmitButtonStatus submitBtnStatus);
  *  @param progress 进度 取值范围0 - 1
  */
 - (void)loadingProgressAnimationWithProgress:(CGFloat)progress;
+
+/**
+ *  最终结果，成功显示√，失败显示X
+ *
+ *  @param result 结果
+ */
+- (void)setFinalResultWith:(BOOL)result;
 
 @end
