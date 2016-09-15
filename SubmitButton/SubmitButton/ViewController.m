@@ -2,7 +2,7 @@
 //  ViewController.m
 //  SubmitButton
 //
-//  Created by ZhangBob on 8/25/16.
+//  Created by JixinZhang on 8/25/16.
 //  Copyright © 2016 JixinZhang. All rights reserved.
 //
 
@@ -66,9 +66,6 @@
     self.submitBtnView.block = ^(SubmitButtonStatus submitBtnStatus){
         switch (submitBtnStatus) {
             case SubmitButtonStatusStart:
-                break;
-                
-            case SubmitButtonStatusLoading:
                 [weakSelf.view addSubview:weakSelf.slider];
                 [weakSelf.view addSubview:weakSelf.speedLabel];
                 break;

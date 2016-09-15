@@ -2,7 +2,7 @@
 //  SubmitButtonView.m
 //  SubmitButton
 //
-//  Created by ZhangBob on 8/25/16.
+//  Created by JixinZhang on 8/25/16.
 //  Copyright © 2016 JixinZhang. All rights reserved.
 //
 
@@ -95,7 +95,7 @@
     //速度设置为0，暂停动画
     _submitBtnLayer.speed=0;
     if (self.block) {
-        self.block(SubmitButtonStatusLoading);
+        self.block(SubmitButtonStatusStart);
     }
 }
 
@@ -111,6 +111,7 @@
     if (self.block) {
         self.block(SubmitButtonStatusEnd);
     }
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"NSNotificationCenter" object:nil];
 }
 
 @end

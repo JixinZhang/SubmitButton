@@ -2,7 +2,7 @@
 //  AppDelegate.m
 //  SubmitButton
 //
-//  Created by ZhangBob on 8/25/16.
+//  Created by JixinZhang on 8/25/16.
 //  Copyright © 2016 JixinZhang. All rights reserved.
 //
 
