@@ -273,7 +273,7 @@
         }else {
             //绘制❌
             CGPoint negitiveCenter = CGPointMake(self.center.x, self.center.y);
-            CGFloat baseLength = (self.progress - (LOADING_62 * self.animationDuration)) * 2;
+            CGFloat baseLength = (self.progress - (LOADING_62 * self.animationDuration)) * 1.5;
             
             CGPoint leftTopPoint = CGPointMake(negitiveCenter.x - baseLength * cosf(M_PI_4), negitiveCenter.y - baseLength * sinf(M_PI_4));
             CGPoint rightTopPoint = CGPointMake(negitiveCenter.x + baseLength * cosf(M_PI_4), negitiveCenter.y - baseLength * sinf(M_PI_4));

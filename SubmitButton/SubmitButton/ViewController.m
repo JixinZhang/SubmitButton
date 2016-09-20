@@ -30,7 +30,7 @@
         _resetButton.frame = CGRectMake((kScreenWidth - 200) / 2.0, kScreenHeight / 2.0 + 80, 200, 30);
         _resetButton.backgroundColor = mainColor;
         _resetButton.layer.cornerRadius = 15.0f;
-        [_resetButton setTitle:@"Reset Button" forState:UIControlStateNormal];
+        [_resetButton setTitle:@"Reset" forState:UIControlStateNormal];
         [_resetButton addTarget:self action:@selector(resetSubmitButtonView) forControlEvents:UIControlEventTouchUpInside];
     }
     return _resetButton;
@@ -49,10 +49,10 @@
     [self.slider setValue:0 animated:YES];
     [self.slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
     
-    self.speedLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, kScreenHeight / 2.0 + 30, 70, 30)];
+    self.speedLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, kScreenHeight / 2.0 + 30, 75, 30)];
     self.speedLabel.font = [UIFont systemFontOfSize:10.f];
     self.speedLabel.textAlignment = NSTextAlignmentCenter;
-    self.speedLabel.text = @"进度：0";
+    self.speedLabel.text = @"progress：0";
     self.speedLabel.layer.cornerRadius = 5.0f;
     self.speedLabel.layer.borderColor = mainColor.CGColor;
     self.speedLabel.layer.borderWidth = 1.0f;
@@ -89,7 +89,7 @@
 
 - (void)sliderValueChanged:(UISlider *)sender {
     UISlider *slider = sender;
-    self.speedLabel.text = [NSString stringWithFormat:@"进度：%.1f",slider.value];
+    self.speedLabel.text = [NSString stringWithFormat:@"progress：%.1f",slider.value];
     [self.submitBtnView loadingProgressAnimationWithProgress:slider.value];
     if (slider.value == 1) {
         [self showAlertForSetFinalResult];
@@ -99,7 +99,7 @@
 - (void)resetSubmitButtonView {
     [self.slider setValue:0 animated:YES];
     [self.slider removeFromSuperview];
-    self.speedLabel.text = [NSString stringWithFormat:@"进度：0"];
+    self.speedLabel.text = [NSString stringWithFormat:@"progress：0"];
     [self.speedLabel removeFromSuperview];
 
     [self.submitBtnView removeFromSuperview];
@@ -108,11 +108,11 @@
 
 - (void)showAlertForSetFinalResult {
     __weak typeof (self)wSelf = self;
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"请选择加载结果" preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *failedAction = [UIAlertAction actionWithTitle:@"失败" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"choose result" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *failedAction = [UIAlertAction actionWithTitle:@"failed" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
         [wSelf.submitBtnView setFinalResultWith:NO];
     }];
-    UIAlertAction *succeedAction = [UIAlertAction actionWithTitle:@"成功" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *succeedAction = [UIAlertAction actionWithTitle:@"succeeded" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [wSelf.submitBtnView setFinalResultWith:YES];
     }];
     
