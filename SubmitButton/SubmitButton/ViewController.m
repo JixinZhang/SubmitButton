@@ -38,8 +38,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.view addSubview:self.resetButton];
     
+    UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(5, (kScreenHeight - 50) / 3.0 - 40, kScreenWidth - 10, 340)];
+    bgView.layer.borderWidth = 2;
+    bgView.layer.borderColor = mainColor.CGColor;
+    [self.view addSubview:bgView];
+    
+    
+    [self.view addSubview:self.resetButton];
     [self setupSubmitButtonView];
     
     self.slider = [[UISlider alloc] init];
@@ -109,10 +115,10 @@
 - (void)showAlertForSetFinalResult {
     __weak typeof (self)wSelf = self;
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"choose result" preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *failedAction = [UIAlertAction actionWithTitle:@"failed" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *failedAction = [UIAlertAction actionWithTitle:@"Failed" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
         [wSelf.submitBtnView setFinalResultWith:NO];
     }];
-    UIAlertAction *succeedAction = [UIAlertAction actionWithTitle:@"succeeded" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *succeedAction = [UIAlertAction actionWithTitle:@"Succeeded" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [wSelf.submitBtnView setFinalResultWith:YES];
     }];
     
